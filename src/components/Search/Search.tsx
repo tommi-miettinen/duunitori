@@ -1,8 +1,17 @@
-const Search = () => {
+import { useState } from "react";
+
+interface SearchProps {
+  filter: string;
+  setFilter: (filter: string) => void;
+}
+
+const Search = ({ filter, setFilter }: SearchProps) => {
   return (
-    <div className="rounded-xl m-2 grid grid-cols-2">
-      <div className="w-full flex items-center shadow rounded-xl p-4 border">
+    <div className="rounded-xl m-2 flex gap-4 items-center justify-center">
+      <div className="w-full sm:w-3/6 flex items-center shadow rounded-xl p-4 border">
         <input
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
           placeholder="Hae"
           type="text"
           className="w-full h-full outline-none"
