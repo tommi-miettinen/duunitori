@@ -7,63 +7,69 @@ import Search from "../Search/Search";
 import jobsAPI from "../../api/jobsAPI";
 import Modal from "../Modal/Modal";
 import useWindowSize from "../../hooks/useWindowSize";
-
-const stringifyKeys = (obj: { [key: string]: any }): string => {
-  return Object.values(obj).reduce((a, b) => a.toString() + b.toString());
-};
+import { useLocation, useNavigate } from "react-router-dom";
 
 const JobList = () => {
   const [filter, setFilter] = useState("");
   const [jobs, setJobs] = useState<Jobs>([]);
   const [selectedJob, setSelectedJob] = useState<Job>();
   const [page, setPage] = useState(1);
-  const [modalVisible, setModalVisible] = useState(false);
+  const [modalVisible, setModalVisible] = useState(true);
+  const [itemCount, setItemCount] = useState(0);
+
+  const pageSize = 20;
+  const pageCount = Math.floor(itemCount / pageSize);
+
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const dimensions = useWindowSize();
-
-  const isMobile = dimensions.width! < 640;
-
-  const filteredJobs = jobs.filter((job) =>
-    stringifyKeys(job).includes(filter)
-  );
+  const isMobile = dimensions ? dimensions.width < 640 : false;
 
   const toggleModal = () => {
     setModalVisible(!modalVisible);
   };
 
-  const pageSize = 20;
-
   useEffect(() => {
     fetchJobs();
-  }, []);
+  }, [page]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [itemCount]);
+
+  useEffect(() => {
+    fetchJob(location.pathname.split("-").pop()!);
+    setModalVisible(true);
+  }, [location.pathname]);
 
   const fetchJobs = async () => {
-    const res = await jobsAPI.fetchJobs();
-    setJobs(res);
+    const query = {
+      skip: (page - 1) * pageSize,
+      limit: pageSize,
+      filter,
+    };
+    const res = await jobsAPI.fetchJobs(query);
+    setJobs(res.jobs);
+    setItemCount(res.totalCount);
   };
 
-  const pageCount = filteredJobs.length / pageSize;
+  const fetchJob = async (id: string) => {
+    const res = await jobsAPI.fetchJob(id);
+    setSelectedJob(res);
+  };
 
-  const start = (page - 1) * pageSize;
-  const end = page * pageSize;
-
-  const slicedJobs =
-    filteredJobs.length > pageSize
-      ? filteredJobs.slice(start, end)
-      : filteredJobs;
-
-  const handleSelectedJobClick = (job: any) => {
-    setSelectedJob(job);
-    if (isMobile) toggleModal();
+  const handleSelectedJobClick = (job: Job) => {
+    navigate("/" + job.slug, { replace: true });
   };
 
   return (
     <div className="h-full w-full flex flex-col">
-      <Search filter={filter} setFilter={setFilter} />
+      <Search filter={filter} setFilter={setFilter} fetchJobs={fetchJobs} />
       <div className="grid sm:grid-cols-2 py-4 w-full h-full m-auto overflow-auto">
         <div className="w-full flex flex-col overflow-auto">
           <div className="flex flex-col h-full overflow-auto">
-            {slicedJobs.map((job) => (
+            {jobs.map((job) => (
               <JobPreview
                 key={job.id}
                 job={job}
@@ -71,11 +77,11 @@ const JobList = () => {
                 selectedJob={selectedJob}
               />
             ))}
-            {slicedJobs.length === 0 && (
+            {jobs.length === 0 && (
               <div className="m-auto">Haulla ei löytynyt tuloksia</div>
             )}
           </div>
-          <div className="flex justify-center my-4 p-1">
+          <div className="flex justify-center mt-4 p-1">
             <Pagination page={page} pages={pageCount} setPage={setPage} />
           </div>
         </div>

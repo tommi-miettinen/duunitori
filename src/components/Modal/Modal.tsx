@@ -1,23 +1,28 @@
-import React from "react";
 import ReactDOM from "react-dom";
 
-const Modal = ({ isShowing, children, toggleModal }) => {
+interface ModalProps {
+  isShowing: boolean;
+  children: any;
+  toggleModal: () => void;
+}
+
+const Modal = ({ isShowing, children, toggleModal }: ModalProps) => {
   return isShowing
     ? ReactDOM.createPortal(
-        <React.Fragment>
+        <>
           <div className="modal-overlay" />
           <div
             id="bg"
             onClick={toggleModal}
-            className="modal-wrapper flex justify-center items-center p-4"
+            className="modal-wrapper flex"
             aria-modal
             aria-hidden
             tabIndex={-1}
             role="dialog"
           >
-            <div className="modal shadow rounded-xl">{children}</div>
+            <div className="modal shadow rounded-xl mt-8">{children}</div>
           </div>
-        </React.Fragment>,
+        </>,
         document.body
       )
     : null;

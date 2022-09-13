@@ -1,13 +1,22 @@
-import { useState } from "react";
+import { useEffect } from "react";
 
 interface SearchProps {
   filter: string;
   setFilter: (filter: string) => void;
+  fetchJobs: () => void;
 }
 
-const Search = ({ filter, setFilter }: SearchProps) => {
+const Search = ({ filter, setFilter, fetchJobs }: SearchProps) => {
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      fetchJobs();
+    }, 100);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [filter]);
+
   return (
-    <div className="rounded-xl m-2 flex gap-4 items-center justify-center">
+    <div className="rounded-xl flex gap-2 items-center justify-center">
       <div className="w-full sm:w-3/6 flex items-center shadow rounded-xl p-4 border">
         <input
           value={filter}
