@@ -28,6 +28,7 @@ const JobList = () => {
 
   const toggleModal = () => {
     setModalVisible(!modalVisible);
+    if (modalVisible) navigate("/");
   };
 
   useEffect(() => {
