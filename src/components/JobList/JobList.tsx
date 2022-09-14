@@ -60,7 +60,8 @@ const JobList = () => {
   };
 
   const handleSelectedJobClick = (job: Job) => {
-    navigate("/" + job.slug, { replace: true });
+    const url = "/" + job.slug;
+    navigate(url, { replace: location.pathname === url });
   };
 
   return (

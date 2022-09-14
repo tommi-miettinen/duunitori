@@ -14,13 +14,16 @@ const Modal = ({ isShowing, children, toggleModal }: ModalProps) => {
           <div
             id="bg"
             onClick={toggleModal}
-            className="modal-wrapper flex"
+            className="modal-wrapper flex flex-col"
             aria-modal
             aria-hidden
             tabIndex={-1}
             role="dialog"
           >
-            <div className="modal shadow rounded-xl mt-8">{children}</div>
+            <button className="font-semibold shadow border bg-white rounded-full h-8 w-8 p-4 flex items-center justify-center mt-4 ml-auto mr-4">
+              X
+            </button>
+            <div className="modal shadow rounded-xl mt-4">{children}</div>
           </div>
         </>,
         document.body
