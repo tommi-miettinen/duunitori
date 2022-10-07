@@ -1,7 +1,3 @@
-### Job portal application
-Recruitment pre-assignment for Duunitori
-
-
 ### Live demo
 https://duunitori-rekry.herokuapp.com
 
